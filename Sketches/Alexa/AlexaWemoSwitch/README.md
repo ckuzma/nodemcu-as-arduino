@@ -2,8 +2,8 @@
 ![Photo of NodeMCU next to Amazon Dot](https://github.com/ckuzma/nodemcu-as-arduino/blob/develop/photos/alexawemo.jpg)
 ## Instructions
 1. Download / clone this repo's code
-2. Change the device name if you wish to something you like
-3. Flash the NodeMCU
+2. Change the device name (by default it is "Christmas Lights")
+3. Install [additional libraries](https://github.com/ckuzma/nodemcu-as-arduino#external-libraries) as needed and then flash the NodeMCU
 4. Connect relay device to D1 (or whatever you selected) on the NodeMCU
 5. Using another device, connect to the open ESP network to configure your wireless settings
 6. Restart the NodeMCU (if necessary)
