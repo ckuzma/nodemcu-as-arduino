@@ -26,9 +26,13 @@ Blocks are turned on and off randomly, each frame almost a sort-of QR code. It's
 Gives realtime information about airplanes traveling overhead by using the ADS-B Exchange API.
 
 ### WeatherStation
+![Photo of Weather Station sketch on NodeMCU](https://github.com/ckuzma/nodemcu-as-arduino/blob/master/photos/weatherstation.gif)
+
 Displays weather information for a location using the Weather Underground API.
 
 ### WorldClock
+![Photo of World Clock sketch on NodeMCU](https://github.com/ckuzma/nodemcu-as-arduino/blob/master/photos/worldclock.gif)
+
 Displays the time for cities around the world, along with a small image for a handful of locations.
 
 ## External libraries:
