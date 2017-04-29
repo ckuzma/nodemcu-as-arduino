@@ -36,11 +36,10 @@ void setup() {
   pinMode(D2, OUTPUT);
   pinMode(D3, OUTPUT);
   pinMode(D4, OUTPUT);
-  digitalWrite(D1, HIGH); // Start with light on
-  digitalWrite(D2, HIGH); // Start with light on
-  digitalWrite(D3, HIGH); // Start with light on
-  digitalWrite(D4, HIGH); // Start with light on
-//  digitalWrite(D1, LOW); // Start with light off
+  digitalWrite(D1, LOW); // Start with light off
+  digitalWrite(D2, LOW); // Start with light off
+  digitalWrite(D3, LOW); // Start with light off
+  digitalWrite(D4, LOW); // Start with light off
 
   // Set the UUIDs and socket information:
   prepareIds();
