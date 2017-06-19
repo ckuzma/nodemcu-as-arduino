@@ -7,7 +7,7 @@
 #include <WiFiUdp.h>
 
 // Some UDP / WeMo specific variables:
-String device_name = "colorful artwork";  // Name of device
+String device_name = "pixel board";  // Name of device
 float power = true;                        // Pin to toggle
 WiFiUDP UDP;
 IPAddress ipMulti(239, 255, 255, 250);
