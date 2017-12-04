@@ -18,7 +18,7 @@
 #define HOSTNAME "ESP8266-OTA-"
 
 // Setup
-const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 10 minutes
+const int UPDATE_INTERVAL_SECS = 15 * 60; // Update every 15 minutes
 
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
