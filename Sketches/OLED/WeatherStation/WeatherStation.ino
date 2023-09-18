@@ -1,43 +1,50 @@
+// Arduino OTA stuff
 #include <ESP8266WiFi.h>
-#include <Ticker.h>
-#include <JsonListener.h>
 #include <ESP8266mDNS.h>
+#include <Ticker.h>
+#include <ArduinoOTA.h>
+#include <JsonListener.h> // Install 
 
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>
-
+// OLED Stuff
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
 #include "Wire.h"
+
+// Weather Underground Stuff
 #include "WundergroundClient.h"
 #include "WeatherStationFonts.h"
 #include "WeatherStationImages.h"
+
+// Time Keeping Stuff
 #include "TimeClient.h"
 
-#define HOSTNAME "ESP8266-OTA-"
+// Get WiFi configuration values
+#include "config.h"
+const String ssid = STASSID;
+const String password = STAPSK;
+const String host = "OTA-ESP8266-WEATHER-DISPLAY-";
 
-// Setup
-const int UPDATE_INTERVAL_SECS = 15 * 60; // Update every 15 minutes
+// Web refresh interval
+const int update_interval = UPDATE_INTERVAL_SECONDS;
 
-// Display Settings
+// Get I2C display configuration values
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int SDA_PIN = 0;
-const int SDC_PIN = 2;
+const int sda_pin = SDA_PIN;
+const int sdc_pin = SDC_PIN;
 
-// TimeClient settings
+// Get UTC offset
 const float UTC_OFFSET = -4;
 
-// Wunderground Settings
-const boolean IS_METRIC = false;
-const String WUNDERGRROUND_API_KEY = "YOUR_KEY_HERE";
-const String WUNDERGRROUND_LANGUAGE = "EN";
-const String WUNDERGROUND_COUNTRY = "NY";
-const String WUNDERGROUND_CITY = "New_York";
+// Get Wunderground Settings
+const boolean is_metric = IS_METRIC;
+const String wunderground_api_key = WUNDERGROUND_API_KEY;
+const String wunderground_language = WUNDERGROUND_LANGUAGE;
+const String wunderground_state_country = WUNDERGROUND_COUNTRY;
+const String wunderground_city = WUNDERGROUND_CITY
 
 // Initialize the oled display for address 0x3c
 // sda-pin=14 and sdc-pin=12
-SSD1306Wire     display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+SSD1306Wire     display(I2C_DISPLAY_ADDRESS, sda_pin, sdc_pin);
 OLEDDisplayUi   ui( &display );
 
 /***************************
@@ -47,7 +54,7 @@ OLEDDisplayUi   ui( &display );
 TimeClient timeClient(UTC_OFFSET);
 
 // Set to false, if you prefere imperial/inches, Fahrenheit
-WundergroundClient wunderground(IS_METRIC);
+WundergroundClient wunderground(is_metric);
 
 // flag changed in the ticker function every 10 minutes
 bool readyForWeatherUpdate = false;
@@ -80,49 +87,29 @@ OverlayCallback overlays[] = { drawHeaderOverlay };
 int numberOfOverlays = 1;
 
 void setup() {
-    // Turn On VCC
+  // Turn On VCC
   //pinMode(D4, OUTPUT);
   //digitalWrite(D4, HIGH);
   Serial.begin(115200);
+
+  // Connect to WiFi
+  Serial.println("Booting");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    Serial.println("Retrying connection...");
+  }
+  ArduinoOTA.setHostname(host);
+  ArduinoOTA.begin();
 
   // initialize dispaly
   display.init();
   display.clear();
   display.display();
-
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setContrast(255);
-
-  //WiFiManager
-  //Local intialization. Once its business is done, there is no need to keep it around
-  WiFiManager wifiManager;
-  // Uncomment for testing wifi manager
-  //wifiManager.resetSettings();
-  wifiManager.setAPCallback(configModeCallback);
-
-  //or use this for auto generated name ESP + ChipID
-  wifiManager.autoConnect();
-
-  //Manual Wifi
-  //WiFi.begin(WIFI_SSID, WIFI_PWD);
-  String hostname(HOSTNAME);
-  hostname += String(ESP.getChipId(), HEX);
-  WiFi.hostname(hostname);
-
-
-  int counter = 0;
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    display.clear();
-    display.drawString(64, 10, "Connecting to WiFi");
-    display.drawXbm(46, 30, 8, 8, counter % 3 == 0 ? activeSymbol : inactiveSymbol);
-    display.drawXbm(60, 30, 8, 8, counter % 3 == 1 ? activeSymbol : inactiveSymbol);
-    display.drawXbm(74, 30, 8, 8, counter % 3 == 2 ? activeSymbol : inactiveSymbol);
-    display.display();
-
-    counter++;
   }
 
   ui.setTargetFPS(30);
@@ -148,7 +135,7 @@ void setup() {
 
   updateData(&display);
 
-  ticker.attach(UPDATE_INTERVAL_SECS, setReadyForWeatherUpdate);
+  ticker.attach(update_interval, setReadyForWeatherUpdate);
 
 }
 
@@ -208,9 +195,9 @@ void updateData(OLEDDisplay *display) {
   drawProgress(display, 10, "Updating time...");
   timeClient.updateTime();
   drawProgress(display, 40, "Updating conditions...");
-  wunderground.updateConditions(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateConditions(wunderground_api_key, wunderground_language, wunderground_state_country, wunderground_city);
   drawProgress(display, 70, "Updating forecasts...");
-  wunderground.updateForecast(WUNDERGRROUND_API_KEY, WUNDERGRROUND_LANGUAGE, WUNDERGROUND_COUNTRY, WUNDERGROUND_CITY);
+  wunderground.updateForecast(wunderground_api_key, wunderground_language, wunderground_state_country, wunderground_city);
   lastUpdate = timeClient.getFormattedTime();
   readyForWeatherUpdate = false;
   drawProgress(display, 100, "Done...");

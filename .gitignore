@@ -1,0 +1,4 @@
+*.Identifier
+.DS_STORE
+.vscode/
+config.h
