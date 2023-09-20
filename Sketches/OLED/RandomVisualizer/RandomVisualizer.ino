@@ -22,10 +22,10 @@
 * SOFTWARE.                                                                     *
 ********************************************************************************/
 
-#include "SSD1306.h"
+#include "SSD1306Wire.h"
 
 // Set where to find the board
-SSD1306  display(0x3c, D3, D4); // Specify pins display is connected to, might have to change address
+SSD1306Wire  display(0x3c, D3, D4); // Specify pins display is connected to, might have to change address
 
 // Set display stuff
 const int len = 8; // 128 native pixels / 4 pixels per cell = 32 virtual cells length
